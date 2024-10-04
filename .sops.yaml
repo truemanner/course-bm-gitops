@@ -1,0 +1,4 @@
+creation_rules:
+  - encrypted_regex: '^(data|stringData)$'
+    # public key, eventually can be shared
+    age: age1s7wjefu0pml0wkqn3fvqg68xhf0np4c43geet6xqtklnxkvclvpstgt2vl
