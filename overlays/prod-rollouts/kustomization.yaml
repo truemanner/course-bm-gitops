@@ -9,7 +9,10 @@ resources:
 - frontend-rollout.yaml
 - ingress.yaml
 
-# tutaj trzeba będzie zmienić na target kind Rollout pewnie.
+# more information: https://argo-rollouts.readthedocs.io/en/latest/features/kustomize/
+openapi:
+  path: https://raw.githubusercontent.com/argoproj/argo-schema-generator/main/schema/argo_all_k8s_kustomize_schema.json
+
 patches:
 - patch: |-
     - op: add
@@ -19,6 +22,9 @@ patches:
       path: /spec/progressDeadlineSeconds
       value: 60
   target:
-    kind: Deployment
+    kind: Rollout
     labelSelector: app.kubernetes.io/part-of=booking-microservices
 
+images:
+- name: k8smaestro/argo-rollouts-demo
+  newTag: green
