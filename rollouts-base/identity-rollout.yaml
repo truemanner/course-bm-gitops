@@ -1,0 +1,39 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: identity
+  labels:
+    app.kubernetes.io/name: identity
+    app.kubernetes.io/part-of: booking-microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity
+  template:
+    metadata:
+      labels:
+        app: identity
+    spec:
+      containers:
+        # CHANGE TO YOURS:<org/repo:tag>
+        - image: ghcr.io/asmaestro/bm-identity:latest
+          name: identity
+          ports:
+            - containerPort: 8080
+          env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: docker
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 10m
+            limits:
+              memory: 512Mi
+              cpu: 256m
+  strategy:
+    canary: 
+      steps:
+      - setWeight: 20
+      - pause: {}
