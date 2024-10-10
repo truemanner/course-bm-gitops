@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: frontend
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: frontend
+  template: 
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: rollouts-demo
+        image: k8smaestro/argo-rollouts-demo:red
+        ports:
+        - name: http
+          containerPort: 80
+        resources:
+          requests:
+            memory: "50"
+            cpu: "10m"
+          limits:
+            memory: "300Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /index.html
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /index.html
+            port: http
+          failureThreshold: 1
+          periodSeconds: 10
+  strategy:
+    canary: 
+      steps:
+      - setWeight: 20
+      - pause: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP
